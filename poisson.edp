@@ -1,0 +1,26 @@
+// dif boundary
+border Gamma(t=0,2*pi) { x=cos(t); y=sin(t); }
+
+// build mesh
+mesh Th = buildmesh(Gamma(50));
+plot(Th,wait=true);
+
+real [int] levels =-0.012:0.001:0.012;
+fespace Vh(Th,P1);
+Vh u,v;
+
+func f = x*y;
+
+real start = clock();
+
+solve Poisson(u,v)
+= int2d(Th)(dx(u)*dx(v)+dy(u)*dy(v))-int2d(Th)(f*v)
++on(Gamma,u=0);
+
+// visualize
+plot(u,wait=true);
+// plot(u,viso=levels,fill=true,wait=true);
+// plot(u,dim=3,wait=true);
+plot(u,dim=3,viso=levels,fill=true,wait=true);
+
+cout << " CPU time= " << clock() - start << endl;
